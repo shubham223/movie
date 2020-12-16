@@ -1,40 +1,52 @@
-const title = document.getElementById("Title");
-const genre = document.getElementById("Genre");
-const year = document.getElementById("Year");
-const plot = document.getElementById("Plot");
-const pathToData = "chatTranscript.lines";
+console.log("inside fucntions.js");
+errorMessage = document.getElementById("errorMessage");
+chatText = "chatTranscript.lines";
+console.log(chatText);
 
-var updateCallback = function(data) {
-var value = data.newValue;
-var updatedLine = value[value.length - 1];
-console.log(updatedLine);
-var customerMessage = updatedLine.text;
-if(updatedLine.source.toLowerCase() === "visitor"){
-var url = "https://www.omdbapi.com?t=" + customerMessage + "&apikey= 3e626416";
-console.log(url);
-fetch(url)
-.then(function (response){
-	return response.json();
-}).then(function (res){
-	console.log(res);
-	document.getElementById("Title").innerHTML = res.Title;
-	document.getElementById("Genre").innerHTML = res.Genre;
-	document.getElementById("Year").innerHTML = res.Year;
-	document.getElementById("Plot").innerHTML = res.Plot;
-}).catch(function (error){
-	console.log("Error:" + error);
-});
-}
+ 
+
+var updateCallback = function(data){
+    var value = data.newValue;
+    console.log("after value ");
+    console.log("value : "+value);
+    var line = value[value.length -1];
+    console.log("line : "+line);
+    var movieName = line.text;
+    console.log("after movieName");
+    console.log("moviename : "+movieName);
+    if (line.source.toLowerCase()==="visitor"){
+        var url = "https://www.omdbapi.com?t="+movieName+"&apikey=3e626416";
+        fetch(url)
+                .then(function(response){
+                    
+                    return response.json();
+                }
+                ).then(function(res){
+                    document.getElementById("Title").innerHTML = res.Title;
+                    document.getElementById("Year").innerHTML = res.Year;
+                    document.getElementById("Genre").innerHTML = res.Genre;
+                    document.getElementById("Plot").innerHTML = res.Plot;
+
+ 
+
+                }).catch(function(error){
+                    console.log("I am inside catch");
+                    console.log("Error Message : "+error);
+                })
+    }
 };
 
-var notifyWhenDone = function(err){
-	if(err){
-		//Printing the error
-		console.log("Error:" + err);
-	}
-	var pathToData = "chatTranscript.lines";
-	errorMessage.innerHTML = "Data is not fetched";
+ 
+
+var notifyWhenDone = function(error) {
+    if (err){
+        console.log("I am inside notifyWhenDone function : "+err);
+    }
+    var chatText = "chatTranscript.lines";
+    errorMessage.innerHTML = "Unable to find the movie";
 };
+
+ 
 
 lpTag.agentSDK.init({});
-lpTag.agentSDK.bind(pathToData, updateCallback, notifyWhenDone);
+lpTag.agentSDK.bind(chatText, updateCallback, notifyWhenDone);
